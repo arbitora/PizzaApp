@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    android:orientation="vertical"
+    tools:context="com.example.pizzaapp.pizzaapp.checkoutActivity">
+
+    <ListView
+        android:id="@+id/listPizzaView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_weight="4">
+
+
+        <TextView
+            android:id="@+id/txtView_Total"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="5sp"
+            android:text="@string/txt_checkout_total"
+            android:textSize="20sp"
+            tools:textColor="@color/colorTitles" />
+
+        <Button
+            android:id="@+id/BTN_Order"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/btn_selector"
+            android:padding="5sp"
+            android:text="@string/txt_command_placeorder"
+            tools:textColor="@color/colorTitles" />
+    </LinearLayout>
+
+</LinearLayout>

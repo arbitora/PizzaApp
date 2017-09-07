@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/pizzaListItem"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#fff3e0"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/BTN_Checkout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5sp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_selector"
+            android:text="@string/txt_command_add"
+            android:textAlignment="center"
+            android:textColor="@color/colorTitles"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/BTN_Remove"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5sp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_selector"
+            android:text="@string/txt_command_remove"
+            android:textColor="@color/colorTitles"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:textAlignment="center" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0.3">
+
+        <TextView
+            android:id="@+id/txtView_PizzaName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:text="Pizza Name"
+            android:textColor="@color/colorTitles"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtView_ToppingTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_desc_toppings"
+            android:textColor="@color/colorDescriptions"
+            android:textSize="16sp"
+            android:layout_above="@+id/txtView_Price"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:id="@+id/txtView_Toppings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/txtView_ToppingTitle"
+            android:text="placeholder"
+            android:textColor="@color/colorDescriptions"
+            android:textSize="16sp" />
+
+
+        <TextView
+            android:id="@+id/txtView_Quantity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_desc_quantity"
+            android:textColor="@color/colorDescriptions"
+            android:textSize="16sp"
+            android:layout_above="@+id/txtView_ToppingTitle"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:id="@+id/txtView_Price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/txtView_PizzaName"
+            android:layout_gravity="end"
+            android:layout_marginTop="40dp"
+            android:text="@string/txt_desc_price"
+            android:textAlignment="textEnd"
+            android:textColor="@color/colorTitles"
+            android:textSize="20sp" />
+
+    </RelativeLayout>
+
+</LinearLayout>

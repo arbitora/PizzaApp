@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_activity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    android:orientation="vertical">
+
+    <!-- Area for buttons -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:focusable="true"
+        android:focusableInTouchMode="true" >
+
+        <Button
+            android:id="@+id/BTN_Checkout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="5sp"
+            android:layout_marginEnd="5sp"
+            android:layout_marginLeft="5sp"
+            android:layout_marginRight="5sp"
+            android:layout_marginStart="5sp"
+            android:layout_marginTop="5sp"
+            android:background="@drawable/btn_selector"
+            android:nextFocusLeft="@+id/BTN_Checkout"
+            android:nextFocusUp="@+id/BTN_Checkout"
+            android:onClick="toCheckout"
+
+            android:text="@string/txt_checkout_checkout"
+            android:textColor="@color/colorTitles"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/ETXT_Search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:enabled="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:inputType="textPersonName"
+            android:hint="@string/txt_desc_search"/>
+
+    </LinearLayout>
+
+    <!-- List for pizzas -->
+    <ListView
+        android:id="@+id/listPizzaView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+</LinearLayout>

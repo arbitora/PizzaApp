@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Bricolini Pizza</string>
+
+    <string name="txt_desc_toppings">Toppings:</string>
+    <string name="txt_desc_price">Price</string>
+    <string name="txt_desc_recommended">Recommended</string>
+    <string name="txt_desc_search">Search shrimp ham</string>
+    <string name="txt_desc_quantity">Quantity</string>
+
+    <string name="txt_desc_added">pizza added</string>
+    <string name="txt_desc_removed">pizza removed</string>
+
+    <string name="txt_command_add">Add to Order</string>
+    <string name="txt_command_placeorder">Place Order</string>
+    <string name="txt_command_remove">Remove</string>
+    <string name="txt_command_cancel">Cancel</string>
+
+    <string name="txt_option_selecteat">Select either:</string>
+    <string name="txt_option_takeaway">Take away</string>
+    <string name="txt_option_onthespot">Eat on the Spot</string>
+    <string name="txt_option_paynow">Pay now</string>
+    <string name="txt_option_eatonthespot">Pay on the Spot</string>
+
+    <string name="txt_checkout_checkout">Checkout</string>
+    <string name="txt_checkout_total">Total</string>
+</resources>
