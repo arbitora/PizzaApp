@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="txt_desc_toppings_array">
+        <item>ham</item>
+        <item>shrimp</item>
+        <item>pepperoni</item>
+        <item>salami</item>
+        <item>jalapeno</item>
+        <item>mincemeat</item>
+        <item>olive</item>
+        <item>pineapple</item>
+        <item>tuna</item>
+        <item>Random - Get anything!</item>
+    </string-array>
+</resources>

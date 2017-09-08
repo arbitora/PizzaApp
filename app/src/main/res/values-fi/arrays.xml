@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="txt_desc_toppings_array">
+		<item>kinkku</item>
+		<item>katkarapu</item>
+		<item>pepperoni</item>
+		<item>salami</item>
+		<item>jalapeno</item>
+		<item>jauheliha</item>
+		<item>oliivi</item>
+		<item>ananas</item>
+		<item>tonnikala</item>
+		<item>Satunnainen - Voit saada mitä vain!</item>
+	</string-array>
+</resources>

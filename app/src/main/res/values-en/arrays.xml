@@ -12,18 +12,4 @@
         <item>tuna</item>
         <item>Random - Get anything!</item>
     </string-array>
-
-    <!--
-<string-array name="toppings">
-    <item>kinkku</item>
-    <item>katkarapu</item>
-    <item>pepperoni</item>
-    <item>salami</item>
-    <item>jalapeno</item>
-    <item>jauheliha</item>
-    <item>oliivi</item>
-    <item>ananas</item>
-    <item>tonnikala</item>
-</string-array>
--->
 </resources>

@@ -195,7 +195,7 @@ public class PizzaData {
             6 = Olive
             7 = Pineapple
             8 = Tuna
-            8 = Anything!
+            9 = Anything!
          */
 
         // For each pizza in the list pizzas...

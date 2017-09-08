@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bricolini Pizza</string>
+    <string name="txt_checkout_checkout">Kassa</string>
+    <string name="txt_checkout_total">Yhteensä</string>
+    <string name="txt_command_add">Lisää tilaukseen</string>
+    <string name="txt_command_cancel">Peruuta</string>
+    <string name="txt_command_placeorder">Tee Tilaus</string>
+    <string name="txt_command_remove">Poista</string>
+    <string name="txt_desc_added">pizza lisätty</string>
+    <string name="txt_desc_price">Hinta</string>
+    <string name="txt_desc_quantity">Määrä</string>
+    <string name="txt_desc_recommended">Suositeltu</string>
+    <string name="txt_desc_removed">pizza poistettu</string>
+    <string name="txt_desc_search">Etsi kinkku salami</string>
+    <string name="txt_desc_toppings">Täytteet:</string>
+    <string name="txt_option_eatonthespot">Maksa paikan päällä</string>
+    <string name="txt_option_onthespot">Syö paikan päällä</string>
+    <string name="txt_option_paynow">Maksa nyt</string>
+    <string name="txt_option_selecteat">Valitse toinen:</string>
+    <string name="txt_option_takeaway">Ota mukaan</string>
+</resources>

@@ -52,7 +52,6 @@ public class checkoutActivity extends AppCompatActivity {
         if (savedInstanceState != null)
             activityStarted = savedInstanceState.getBoolean("activityStarted");
 
-        // TODO can't find pizza
 
         // Get data from intent only on initial run.
         // if ActivityStarted is true, do not load intent data.
@@ -196,7 +195,9 @@ public class checkoutActivity extends AppCompatActivity {
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null){
-            ArrayList<PizzaData.Pizza> deleteList = new ArrayList<>(); // Lists Pizza objects we do not want in the main list.
+
+            // Load boolean to detect if data has been sent already.
+            data_sent = savedInstanceState.getBoolean("data_sent");
 
             // Load the string
             String jsonPizzaArrayList = savedInstanceState.getString("pizza_list_json");
@@ -217,6 +218,8 @@ public class checkoutActivity extends AppCompatActivity {
             onPriceChange(null, false);
         }
 
+        // Reconstruct ResultIntent();
+        constructResultIntent();
     }
 
     // Invoked when the activity may be temporarily destroyed, save the instance state here
@@ -239,6 +242,7 @@ public class checkoutActivity extends AppCompatActivity {
         outState.putString("pizza_list_json", jsonPizzaArrayList);
 
         outState.putBoolean("activityStarted", activityStarted);
+        outState.putBoolean("data_Sent", data_sent);
 
         // call superclass to save any view hierarchy
         super.onSaveInstanceState(outState);

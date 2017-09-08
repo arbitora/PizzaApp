@@ -230,6 +230,9 @@ public class MainActivity extends AppCompatActivity {
         // Checkout was successful, reset everything.
         if (resultCode == RESULT_OK){
             fillPizzaArrayList(true);
+            for (PizzaData.Pizza pizza : PizzaArrayList){
+                pizza.setQuantity(0); // Reset all quantities.
+            }
         }
         // Checkout was cancelled, load the data.
         else if (resultCode == RESULT_CANCELED && data != null){
@@ -245,6 +248,7 @@ public class MainActivity extends AppCompatActivity {
                 orderedPizzas = gson.fromJson(jsonPizzaArrayList, type);
 
                 for (PizzaData.Pizza pizza_from_list : PizzaArrayList){
+                    pizza_from_list.setQuantity(0); // Reset all quantities.
                     for (PizzaData.Pizza pizza_from_order : orderedPizzas){
                         if (pizza_from_list.getName().equals(pizza_from_order.getName())){
                             pizza_from_list.setQuantity(pizza_from_order.getQuantity());
