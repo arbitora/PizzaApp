@@ -1,7 +1,6 @@
 package com.example.pizzaapp.pizzaapp;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -47,17 +46,8 @@ public class MainActivity extends AppCompatActivity {
         mPizzaAdapter = new PizzaAdapter(PizzaArrayList, getApplicationContext());
         mPizzaAdapter.setPizzaQuantityListener(new PizzaAdapter.PizzaQuantityListener(){
             @Override
-            public void onPizzaQuantityChange(Context context, PizzaData.Pizza changedPizza, boolean isIncreased){
-
-                String temp;
-                if (isIncreased){
-                    temp = changedPizza.getName() + " -" + getResources().getString(R.string.txt_desc_added) + ".";
-                }
-                else{
-                    temp = changedPizza.getName() + " -" + getResources().getString(R.string.txt_desc_removed) + ".";
-                }
-
-                Toast.makeText(context, temp, Toast.LENGTH_SHORT).show();
+            public void onPizzaQuantityChange(PizzaData.Pizza changedPizza, boolean isIncreased){
+                pizzaQuantityChangeToast(changedPizza, isIncreased);
             }
         });
         pizzaListView.setAdapter(mPizzaAdapter);
@@ -171,9 +161,22 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void pizzaQuantityChangeToast(PizzaData.Pizza changedPizza, boolean isIncreased){
+        String temp;
+        if (isIncreased){
+            temp = changedPizza.getName() + " -" + getResources().getString(R.string.txt_desc_added) + ".";
+        }
+        else{
+            temp = changedPizza.getName() + " -" + getResources().getString(R.string.txt_desc_removed) + ".";
+        }
+
+        Toast.makeText(this, temp, Toast.LENGTH_SHORT).show();
+    }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-
+        // TODO: Change pizza quantities.
     }
 
 

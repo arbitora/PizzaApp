@@ -21,7 +21,12 @@ public class PizzaAdapter extends ArrayAdapter<PizzaData.Pizza> {
     Context mContext;
 
     public interface PizzaQuantityListener {
-        public void onPizzaQuantityChange(Context context, PizzaData.Pizza changed, boolean isIncreased);
+        /*
+            This listener is called every time a change in any pizza's quantity is detected.
+            PizzaData.Pizza changed is the Pizza which's quantity has been changed.
+            boolean isIncreased is true if quantity was increased, false if decreased.
+         */
+        void onPizzaQuantityChange(PizzaData.Pizza changed, boolean isIncreased);
     }
 
     private PizzaQuantityListener listener;
@@ -34,6 +39,7 @@ public class PizzaAdapter extends ArrayAdapter<PizzaData.Pizza> {
         this.listener = null;
     }
 
+    // Setting up the listener.
     public void setPizzaQuantityListener(PizzaQuantityListener listener){
         this.listener = listener;
     }
@@ -111,7 +117,8 @@ public class PizzaAdapter extends ArrayAdapter<PizzaData.Pizza> {
                         btn_child_remove.setEnabled(true);
                 }
 
-                listener.onPizzaQuantityChange(mContext, listSet.get(position), true);
+                // Call listener function.
+                listener.onPizzaQuantityChange(listSet.get(position), true);
             }
         });
 
@@ -134,7 +141,8 @@ public class PizzaAdapter extends ArrayAdapter<PizzaData.Pizza> {
                         btn_child_remove.setEnabled(false);
                 }
 
-                listener.onPizzaQuantityChange(mContext, listSet.get(position), false);
+                // Call listener function.
+                listener.onPizzaQuantityChange(listSet.get(position), false);
             }
         });
 

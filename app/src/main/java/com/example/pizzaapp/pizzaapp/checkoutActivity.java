@@ -65,32 +65,22 @@ public class checkoutActivity extends AppCompatActivity {
         btn_PlaceOrder = (Button) findViewById(R.id.BTN_Order);
         txt_total_price = (TextView) findViewById(R.id.txtView_Total);
 
-
-        // Bind ArrayList to adapter and set the adapter to ListView.
+        // Bind ArrayList to adapter, implement listener and set the adapter to ListView.
         mPizzaAdapter = new PizzaAdapter(PizzaArrayList, getApplicationContext());
         mPizzaAdapter.setPizzaQuantityListener(new PizzaQuantityListener(){
             @Override
-            public void onPizzaQuantityChange(Context context, PizzaData.Pizza changedPizza, boolean isIncreased){
-                double total_price = 0;
-                for (PizzaData.Pizza pizza : PizzaArrayList){
-                    total_price += pizza.getTotalPriceDouble();
-                }
+            public void onPizzaQuantityChange(PizzaData.Pizza changedPizza, boolean isIncreased){
 
-                txt_total_price.setText(getResources().getString(R.string.txt_checkout_total) + " " + new DecimalFormat("#.00").format(total_price) + " €");
-
-                String temp;
-                if (isIncreased){
-                    temp = changedPizza.getName() + " -" + getResources().getString(R.string.txt_desc_added) + ".";
-                }
-                else{
-                    temp = changedPizza.getName() + " -" + getResources().getString(R.string.txt_desc_removed) + ".";
-                }
-
-                Toast.makeText(context, temp, Toast.LENGTH_SHORT).show();
+                // Call function to show the total price.
+                onPriceChange(changedPizza, isIncreased);
             }
         });
 
         pizzaListView.setAdapter(mPizzaAdapter);
+
+
+        // Call function to show the total price.  No change in quantity was made, thus pass in null.
+        onPriceChange(null, false);
     }
 
     public void sendOrder(View v){
@@ -129,5 +119,32 @@ public class checkoutActivity extends AppCompatActivity {
         return isConnected;
     }
 
+    /*
+        Calculates new total price and sets it in TextView.
+        If no pizza's quantity was changed, changedPizza is null.
+     */
+    private void onPriceChange(PizzaData.Pizza changedPizza, boolean isIncreased){
 
+        double total_price = 0; // Temporary double variable to calculate the total price in.
+        // Go through PizzaArrayList and calculate all the prices and put it in TextView.
+        for (PizzaData.Pizza pizza : PizzaArrayList){
+            total_price += pizza.getTotalPriceDouble();
+        }
+
+        txt_total_price.setText(getResources().getString(R.string.txt_checkout_total) + " " + new DecimalFormat("#.00").format(total_price) + " €");
+
+        // Create toast message if changedPizza is not null (a change in pizza was detected).
+        if (changedPizza != null){
+            String temp;
+            if (isIncreased){
+                temp = changedPizza.getName() + " -" + getResources().getString(R.string.txt_desc_added) + ".";
+            }
+            else{
+                temp = changedPizza.getName() + " -" + getResources().getString(R.string.txt_desc_removed) + ".";
+            }
+
+            Toast.makeText(this, temp, Toast.LENGTH_SHORT).show();
+        }
+
+    }
 }
