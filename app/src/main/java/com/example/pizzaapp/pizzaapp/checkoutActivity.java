@@ -1,10 +1,12 @@
 package com.example.pizzaapp.pizzaapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -28,18 +30,21 @@ public class checkoutActivity extends AppCompatActivity {
     private Button btn_PlaceOrder;
     private TextView txt_total_price;
 
+    private Intent resultIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_checkout);
+        setContentView(R.layout.checkout_activity);
 
         PizzaArrayList = new ArrayList<>();
 
-        // Get data from intent.
-        if (getIntent() != null){
+        // Get data from intent, check that it is there before doing so.
+        if (getIntent() != null && getIntent().hasExtra("pizza_list_json")){
 
             ArrayList<PizzaData.Pizza> deleteList = new ArrayList<>(); // Lists Pizza objects we do not want in the main list.
 
+            // Load the string
             String jsonPizzaArrayList = getIntent().getStringExtra("pizza_list_json");
 
             Gson gson = new Gson();
@@ -71,6 +76,9 @@ public class checkoutActivity extends AppCompatActivity {
             @Override
             public void onPizzaQuantityChange(PizzaData.Pizza changedPizza, boolean isIncreased){
 
+                // Text message to see the changes.
+                Log.d("STRING", "Message: " + PizzaData.pizzas);
+
                 // Call function to show the total price.
                 onPriceChange(changedPizza, isIncreased);
             }
@@ -81,10 +89,17 @@ public class checkoutActivity extends AppCompatActivity {
 
         // Call function to show the total price.  No change in quantity was made, thus pass in null.
         onPriceChange(null, false);
+
+
+        resultIntent = new Intent();
     }
 
     public void sendOrder(View v){
         // TODO: Send post data.
+
+        // Set Intent result to OK if POST was successfully sent, otherwise RESULT_CANCEL
+        setResult(RESULT_CANCELED, resultIntent);
+        setResult(RESULT_OK, resultIntent);
     }
 
 
@@ -131,7 +146,8 @@ public class checkoutActivity extends AppCompatActivity {
             total_price += pizza.getTotalPriceDouble();
         }
 
-        txt_total_price.setText(getResources().getString(R.string.txt_checkout_total) + " " + new DecimalFormat("#.00").format(total_price) + " €");
+        if (txt_total_price != null)
+            txt_total_price.setText(getResources().getString(R.string.txt_checkout_total) + " " + new DecimalFormat("0.00").format(total_price) + " €");
 
         // Create toast message if changedPizza is not null (a change in pizza was detected).
         if (changedPizza != null){
@@ -146,5 +162,88 @@ public class checkoutActivity extends AppCompatActivity {
             Toast.makeText(this, temp, Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+
+
+    // This callback is called only when there is a saved instance previously saved using
+    // onSaveInstanceState(). We restore some state in onCreate() while we can optionally restore
+    // other state here, possibly usable after onStart() has completed.
+    // The savedInstanceState Bundle is same as the one used in onCreate().
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        if (savedInstanceState != null){
+            ArrayList<PizzaData.Pizza> deleteList = new ArrayList<>(); // Lists Pizza objects we do not want in the main list.
+
+            // Load the string
+            String jsonPizzaArrayList = savedInstanceState.getString("pizza_list_json");
+
+            Gson gson = new Gson();
+            Type type = new TypeToken<ArrayList<PizzaData.Pizza>>(){}.getType();
+
+            PizzaArrayList = gson.fromJson(jsonPizzaArrayList, type);
+            for (PizzaData.Pizza pizza : PizzaArrayList){
+
+                // Find each pizza that has quantity of 0 and add it to deleteList
+                if (pizza.getQuantity() == 0)
+                    deleteList.add(pizza);
+            }
+
+            // Iterate through deleteList and delete each pizza from the actualy PizzaArrayList.
+            for (PizzaData.Pizza pizza : deleteList){
+                PizzaArrayList.remove(pizza);
+            }
+
+            // Call function to show the total price.  No change in quantity was made, thus pass in null.
+            onPriceChange(null, false);
+        }
+
+    }
+
+    // Invoked when the activity may be temporarily destroyed, save the instance state here
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // Create temporary Gson object to handle json creation.
+        Gson gson = new Gson();
+
+        // Get the current selected pizzas from PizzData.pizzas, where all pizzas are stored.
+        // Save them in a temporary ArrayList.
+        ArrayList<PizzaData.Pizza> orderedPizzas = new ArrayList<>();
+        for (PizzaData.Pizza pizza : PizzaArrayList){
+            if (pizza.getQuantity() > 0){
+                orderedPizzas.add(pizza);
+            }
+        }
+
+        // Turn the temporary ArrayList into json
+        String jsonPizzaArrayList = gson.toJson(orderedPizzas);
+
+        // Save json string in outState.
+        outState.putString("pizza_list_json", jsonPizzaArrayList);
+
+        // call superclass to save any view hierarchy
+        super.onSaveInstanceState(outState);
+    }
+
+    public void constructResultIntent(){
+        // Create temporary Gson object to handle json creation.
+        Gson gson = new Gson();
+
+        // Get the current selected pizzas from PizzData.pizzas, where all pizzas are stored.
+        // Save them in a temporary ArrayList.
+        ArrayList<PizzaData.Pizza> orderedPizzas = new ArrayList<>();
+        for (PizzaData.Pizza pizza : PizzaArrayList){
+            if (pizza.getQuantity() > 0){
+                orderedPizzas.add(pizza);
+            }
+        }
+
+        // Turn the temporary ArrayList into json
+        String jsonPizzaArrayList = gson.toJson(orderedPizzas);
+
+        // Save json string in resultIntent.
+        resultIntent.putExtra("pizza_list_json", jsonPizzaArrayList);
+
+        setResult(RESULT_CANCELED, resultIntent);
     }
 }

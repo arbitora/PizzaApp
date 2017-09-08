@@ -6,13 +6,16 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -48,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPizzaQuantityChange(PizzaData.Pizza changedPizza, boolean isIncreased){
                 pizzaQuantityChangeToast(changedPizza, isIncreased);
+                // Text message to see the changes.
+                Log.d("STRING", "Message: " + PizzaData.pizzas);
             }
         });
         pizzaListView.setAdapter(mPizzaAdapter);
@@ -63,27 +68,39 @@ public class MainActivity extends AppCompatActivity {
                 // Do nothing at the moment.
             }
 
+
             @Override
             public void afterTextChanged(Editable s) {
+                // Do filtering search everytime a change is detected.
                 searchPizzaList(s.toString());
             }
             });
-
-        if (savedInstanceState != null){
-            // TODO: Load customer's order list.
-            // TODO: Load search field properties.
-        }
     }
 
-
+    /*
+        Loads checkoutActivity, the cart view.
+     */
     public void toCheckout(View v){
-        // TODO: Load checkout activity.
 
+        // Create intent.
         Intent checkout = new Intent(this, checkoutActivity.class);
+
+        // Create temporary Gson object to handle json creation.
         Gson gson = new Gson();
 
-        String jsonPizzaArrayList = gson.toJson(PizzaArrayList);
+        // Get the current selected pizzas from PizzData.pizzas, where all pizzas are stored.
+        // Save them in a temporary ArrayList.
+        ArrayList<PizzaData.Pizza> orderedPizzas = new ArrayList<>();
+        for (PizzaData.Pizza pizza : PizzaData.pizzas){
+            if (pizza.getQuantity() > 0){
+                orderedPizzas.add(pizza);
+            }
+        }
 
+        // Turn the temporary ArrayList into json
+        String jsonPizzaArrayList = gson.toJson(orderedPizzas);
+
+        // Put the Json string into intent's extra and start activity.
         checkout.putExtra("pizza_list_json", jsonPizzaArrayList);
         startActivity(checkout);
     }
@@ -161,6 +178,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /*
+        Creates a short duration toast message when quantity of a pizza has been changed.
+        changedPizza is the pizza which's quantity was changed.
+        isIncreased true = quantity was increased, false = quantity was decreased.
+     */
     private void pizzaQuantityChangeToast(PizzaData.Pizza changedPizza, boolean isIncreased){
         String temp;
         if (isIncreased){
@@ -173,10 +195,17 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, temp, Toast.LENGTH_SHORT).show();
     }
 
-
+    /*
+        Invoked when returning from Checkout view.
+        If user created the order, resultCode returns RESULT_OK.
+        If user cancelled order and returned to MainActivity, resultCode returns RESULT_CANCELED.
+        Intent data has the order contents listed, these will be loaded to show proper quantities.
+        JSON string can be found via keyword pizza_list_json
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        // TODO: Change pizza quantities.
+        // TODO: Check ResultCode
+        // TODO: Do things depending on ResultCode
     }
 
 
@@ -186,15 +215,57 @@ public class MainActivity extends AppCompatActivity {
     // The savedInstanceState Bundle is same as the one used in onCreate().
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-        // TODO: Load customer's order list.
-        // TODO: Load search field properties.
+        if (savedInstanceState != null){
+            ArrayList<PizzaData.Pizza> deleteList = new ArrayList<>(); // Lists Pizza objects we do not want in the main list.
+
+            // Load the string
+            String jsonPizzaArrayList = savedInstanceState.getString("pizza_list_json");
+
+            Gson gson = new Gson();
+            Type type = new TypeToken<ArrayList<PizzaData.Pizza>>(){}.getType();
+
+            PizzaArrayList = gson.fromJson(jsonPizzaArrayList, type);
+            for (PizzaData.Pizza pizza : PizzaArrayList){
+
+                // Find each pizza that has quantity of 0 and add it to deleteList
+                if (pizza.getQuantity() == 0)
+                    deleteList.add(pizza);
+            }
+
+            // Iterate through deleteList and delete each pizza from the actualy PizzaArrayList.
+            for (PizzaData.Pizza pizza : deleteList){
+                PizzaArrayList.remove(pizza);
+            }
+
+            // Load the Search text field text.
+            etxt_SearchField.setText(savedInstanceState.getString("search_text"));
+        }
+
     }
 
-    // invoked when the activity may be temporarily destroyed, save the instance state here
+    // Invoked when the activity may be temporarily destroyed, save the instance state here
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        // TODO: Save customer's order list.
-        // TODO: Save search field properties.
+        // Create temporary Gson object to handle json creation.
+        Gson gson = new Gson();
+
+        // Get the current selected pizzas from PizzData.pizzas, where all pizzas are stored.
+        // Save them in a temporary ArrayList.
+        ArrayList<PizzaData.Pizza> orderedPizzas = new ArrayList<>();
+        for (PizzaData.Pizza pizza : PizzaData.pizzas){
+            if (pizza.getQuantity() > 0){
+                orderedPizzas.add(pizza);
+            }
+        }
+
+        // Turn the temporary ArrayList into json
+        String jsonPizzaArrayList = gson.toJson(orderedPizzas);
+
+        // Save json string in outState.
+        outState.putString("pizza_list_json", jsonPizzaArrayList);
+        // Save current search field text in outState.
+        outState.putString("search_text", etxt_SearchField.getText().toString());
+
 
         // call superclass to save any view hierarchy
         super.onSaveInstanceState(outState);

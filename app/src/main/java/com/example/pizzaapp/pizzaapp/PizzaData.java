@@ -167,7 +167,7 @@ public class PizzaData {
     }
 
 
-
+    // Mock up pizza data.
     public static Pizza pizzas[] = {
 
             new Pizza ("Sinivalkoinen suomi-pitsa", new int[] {0 , 1, 2}, 6.95, false),

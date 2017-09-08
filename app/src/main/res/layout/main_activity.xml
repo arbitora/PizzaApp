@@ -46,7 +46,9 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:inputType="textPersonName"
-            android:hint="@string/txt_desc_search"/>
+            android:imeOptions="actionDone"
+            android:hint="@string/txt_desc_search"
+            />
 
     </LinearLayout>
 
