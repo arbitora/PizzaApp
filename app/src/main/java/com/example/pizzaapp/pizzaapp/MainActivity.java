@@ -68,13 +68,12 @@ public class MainActivity extends AppCompatActivity {
                 // Do nothing at the moment.
             }
 
-
             @Override
             public void afterTextChanged(Editable s) {
                 // Do filtering search everytime a change is detected.
                 searchPizzaList(s.toString());
             }
-            });
+        });
     }
 
     /*
@@ -88,10 +87,10 @@ public class MainActivity extends AppCompatActivity {
         // Create temporary Gson object to handle json creation.
         Gson gson = new Gson();
 
-        // Get the current selected pizzas from PizzData.pizzas, where all pizzas are stored.
+        // Get the current selected pizzas from PizzaData.pizzas, where all pizzas are stored.
         // Save them in a temporary ArrayList.
         ArrayList<PizzaData.Pizza> orderedPizzas = new ArrayList<>();
-        for (PizzaData.Pizza pizza : PizzaData.pizzas){
+        for (PizzaData.Pizza pizza : PizzaArrayList){
             if (pizza.getQuantity() > 0){
                 orderedPizzas.add(pizza);
             }
@@ -102,7 +101,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Put the Json string into intent's extra and start activity.
         checkout.putExtra("pizza_list_json", jsonPizzaArrayList);
-        startActivity(checkout);
+
+        //startActivity(checkout); // Not used as result is required
+        // Request code is not used
+        startActivityForResult(checkout, 0);
     }
 
 
@@ -162,20 +164,36 @@ public class MainActivity extends AppCompatActivity {
     private void fillPizzaArrayList(boolean doSort){
 
         // Initialize pizza ArrayList
-        if (PizzaArrayList != null)
-            PizzaArrayList.clear();
-        else
+        if (PizzaArrayList == null)
             PizzaArrayList = new ArrayList<>();
 
-        // Add pizzas into ArrayList
-        for (int i = 0; i < PizzaData.pizzas.length; i++){
-            PizzaArrayList.add(PizzaData.pizzas[i]);
+        // Add all pizzas that have larger than 0 quantity into temporary list.
+        ArrayList<PizzaData.Pizza> tempList = new ArrayList<>();
+        for (PizzaData.Pizza pizza : PizzaArrayList) {
+            if (pizza.getQuantity() > 0)
+                tempList.add(pizza);
+        }
+
+        PizzaArrayList.clear();
+
+        // Populate main PizzaArrayList with all the pizzas.
+        for (PizzaData.Pizza pizza : PizzaData.pizzas){
+            PizzaArrayList.add(pizza);
+
+        }
+
+        // Clone the pizza quantities from the temporary list.
+        for (PizzaData.Pizza pizza : tempList){
+            for (PizzaData.Pizza ArrayListPizza : PizzaArrayList){
+                if (pizza.getName().equals(ArrayListPizza.getName())){
+                    ArrayListPizza.setQuantity(pizza.getQuantity());
+                }
+            }
         }
 
         // At the end, sort the new list if required.
         if(doSort)
             Collections.sort(PizzaArrayList, PizzaData.Pizza.Comparators.PizzaPrice_PizzaName);
-
     }
 
     /*
@@ -184,15 +202,17 @@ public class MainActivity extends AppCompatActivity {
         isIncreased true = quantity was increased, false = quantity was decreased.
      */
     private void pizzaQuantityChangeToast(PizzaData.Pizza changedPizza, boolean isIncreased){
-        String temp;
-        if (isIncreased){
-            temp = changedPizza.getName() + " -" + getResources().getString(R.string.txt_desc_added) + ".";
-        }
-        else{
-            temp = changedPizza.getName() + " -" + getResources().getString(R.string.txt_desc_removed) + ".";
-        }
+        if (changedPizza != null){
+            String temp;
+            if (isIncreased){
+                temp = changedPizza.getName() + " -" + getResources().getString(R.string.txt_desc_added) + ".";
+            }
+            else{
+                temp = changedPizza.getName() + " -" + getResources().getString(R.string.txt_desc_removed) + ".";
+            }
 
-        Toast.makeText(this, temp, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, temp, Toast.LENGTH_SHORT).show();
+        }
     }
 
     /*
@@ -206,6 +226,38 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         // TODO: Check ResultCode
         // TODO: Do things depending on ResultCode
+
+        // Checkout was successful, reset everything.
+        if (resultCode == RESULT_OK){
+            fillPizzaArrayList(true);
+        }
+        // Checkout was cancelled, load the data.
+        else if (resultCode == RESULT_CANCELED && data != null){
+
+            // Check that the extra is there before accessing it.
+            if(data.hasExtra("pizza_list_json")){
+
+                ArrayList<PizzaData.Pizza> orderedPizzas = new ArrayList<>();
+                String jsonPizzaArrayList = data.getStringExtra("pizza_list_json");
+                Gson gson = new Gson();
+                Type type = new TypeToken<ArrayList<PizzaData.Pizza>>(){}.getType();
+
+                orderedPizzas = gson.fromJson(jsonPizzaArrayList, type);
+
+                for (PizzaData.Pizza pizza_from_list : PizzaArrayList){
+                    for (PizzaData.Pizza pizza_from_order : orderedPizzas){
+                        if (pizza_from_list.getName().equals(pizza_from_order.getName())){
+                            pizza_from_list.setQuantity(pizza_from_order.getQuantity());
+                        }
+                    }
+
+                }
+            }
+
+        }
+
+        if (mPizzaAdapter != null)
+            mPizzaAdapter.notifyDataSetChanged();
     }
 
 
@@ -216,8 +268,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null){
-            ArrayList<PizzaData.Pizza> deleteList = new ArrayList<>(); // Lists Pizza objects we do not want in the main list.
-
             // Load the string
             String jsonPizzaArrayList = savedInstanceState.getString("pizza_list_json");
 
@@ -225,17 +275,6 @@ public class MainActivity extends AppCompatActivity {
             Type type = new TypeToken<ArrayList<PizzaData.Pizza>>(){}.getType();
 
             PizzaArrayList = gson.fromJson(jsonPizzaArrayList, type);
-            for (PizzaData.Pizza pizza : PizzaArrayList){
-
-                // Find each pizza that has quantity of 0 and add it to deleteList
-                if (pizza.getQuantity() == 0)
-                    deleteList.add(pizza);
-            }
-
-            // Iterate through deleteList and delete each pizza from the actualy PizzaArrayList.
-            for (PizzaData.Pizza pizza : deleteList){
-                PizzaArrayList.remove(pizza);
-            }
 
             // Load the Search text field text.
             etxt_SearchField.setText(savedInstanceState.getString("search_text"));

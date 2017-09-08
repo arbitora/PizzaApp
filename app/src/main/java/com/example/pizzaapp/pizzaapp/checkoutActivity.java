@@ -24,7 +24,10 @@ import java.util.ArrayList;
 public class checkoutActivity extends AppCompatActivity {
 
     private ArrayList<PizzaData.Pizza> PizzaArrayList; // Has the full list of all the pizzas
-    private static PizzaAdapter mPizzaAdapter;
+    private PizzaAdapter mPizzaAdapter;
+    private boolean activityStarted = false; // False by default, true when started via Intent.
+
+    private boolean data_sent = false; // TODO: set true when POST sent successfully.
 
     private ListView pizzaListView;
     private Button btn_PlaceOrder;
@@ -37,11 +40,24 @@ public class checkoutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.checkout_activity);
 
+        // Initialize PizzaArrayList
         PizzaArrayList = new ArrayList<>();
 
-        // Get data from intent, check that it is there before doing so.
-        if (getIntent() != null && getIntent().hasExtra("pizza_list_json")){
+        // Bind components to variables.
+        pizzaListView = (ListView) findViewById(R.id.listPizzaView);
+        btn_PlaceOrder = (Button) findViewById(R.id.BTN_Order);
+        txt_total_price = (TextView) findViewById(R.id.txtView_Total);
 
+
+        if (savedInstanceState != null)
+            activityStarted = savedInstanceState.getBoolean("activityStarted");
+
+        // TODO can't find pizza
+
+        // Get data from intent only on initial run.
+        // if ActivityStarted is true, do not load intent data.
+        if (!activityStarted && getIntent().hasExtra("pizza_list_json")){
+            activityStarted = true;
             ArrayList<PizzaData.Pizza> deleteList = new ArrayList<>(); // Lists Pizza objects we do not want in the main list.
 
             // Load the string
@@ -58,40 +74,41 @@ public class checkoutActivity extends AppCompatActivity {
                     deleteList.add(pizza);
             }
 
-            // Iterate through deleteList and delete each pizza from the actualy PizzaArrayList.
+            // Iterate through deleteList and delete each pizza from the actual PizzaArrayList.
             for (PizzaData.Pizza pizza : deleteList){
                 PizzaArrayList.remove(pizza);
             }
+
+            // Call function to show the total price.  No change in quantity was made, thus pass in null.
+            onPriceChange(null, false);
         }
 
-
-        // Bind components to variables.
-        pizzaListView = (ListView) findViewById(R.id.listPizzaView);
-        btn_PlaceOrder = (Button) findViewById(R.id.BTN_Order);
-        txt_total_price = (TextView) findViewById(R.id.txtView_Total);
-
         // Bind ArrayList to adapter, implement listener and set the adapter to ListView.
-        mPizzaAdapter = new PizzaAdapter(PizzaArrayList, getApplicationContext());
-        mPizzaAdapter.setPizzaQuantityListener(new PizzaQuantityListener(){
-            @Override
-            public void onPizzaQuantityChange(PizzaData.Pizza changedPizza, boolean isIncreased){
+        if (mPizzaAdapter == null){
+            mPizzaAdapter = new PizzaAdapter(PizzaArrayList, getApplicationContext());
 
-                // Text message to see the changes.
-                Log.d("STRING", "Message: " + PizzaData.pizzas);
+            mPizzaAdapter.setPizzaQuantityListener(new PizzaQuantityListener(){
+                @Override
+                public void onPizzaQuantityChange(PizzaData.Pizza changedPizza, boolean isIncreased){
+                    // Text message to see the changes.
+                    Log.d("STRING", "Message: " + PizzaData.pizzas);
 
-                // Call function to show the total price.
-                onPriceChange(changedPizza, isIncreased);
-            }
-        });
+                    // Call function to show the total price.
+                    onPriceChange(changedPizza, isIncreased);
+
+                    // Invoke every time a change in pizza quantities is detected.
+                    constructResultIntent();
+                }
+            });
+        }
 
         pizzaListView.setAdapter(mPizzaAdapter);
 
+        if (resultIntent == null)
+            resultIntent = new Intent();
 
-        // Call function to show the total price.  No change in quantity was made, thus pass in null.
-        onPriceChange(null, false);
-
-
-        resultIntent = new Intent();
+        // Construct first time result.
+        constructResultIntent();
     }
 
     public void sendOrder(View v){
@@ -120,6 +137,7 @@ public class checkoutActivity extends AppCompatActivity {
                     isConnected = true;
                 }
             }*/
+
             NetworkInfo[] info = connectivity.getAllNetworkInfo();
             if (info != null)
                 for (int i = 0; i < info.length; i++)
@@ -142,8 +160,11 @@ public class checkoutActivity extends AppCompatActivity {
 
         double total_price = 0; // Temporary double variable to calculate the total price in.
         // Go through PizzaArrayList and calculate all the prices and put it in TextView.
-        for (PizzaData.Pizza pizza : PizzaArrayList){
-            total_price += pizza.getTotalPriceDouble();
+
+        if (PizzaArrayList != null){
+            for (PizzaData.Pizza pizza : PizzaArrayList){
+                total_price += pizza.getTotalPriceDouble();
+            }
         }
 
         if (txt_total_price != null)
@@ -162,6 +183,8 @@ public class checkoutActivity extends AppCompatActivity {
             Toast.makeText(this, temp, Toast.LENGTH_SHORT).show();
         }
 
+        if (mPizzaAdapter != null)
+            mPizzaAdapter.notifyDataSetChanged();
     }
 
 
@@ -182,17 +205,13 @@ public class checkoutActivity extends AppCompatActivity {
             Type type = new TypeToken<ArrayList<PizzaData.Pizza>>(){}.getType();
 
             PizzaArrayList = gson.fromJson(jsonPizzaArrayList, type);
-            for (PizzaData.Pizza pizza : PizzaArrayList){
 
-                // Find each pizza that has quantity of 0 and add it to deleteList
-                if (pizza.getQuantity() == 0)
-                    deleteList.add(pizza);
+
+            if (mPizzaAdapter != null){
+                mPizzaAdapter.clear();
+                mPizzaAdapter.addAll(PizzaArrayList);
             }
 
-            // Iterate through deleteList and delete each pizza from the actualy PizzaArrayList.
-            for (PizzaData.Pizza pizza : deleteList){
-                PizzaArrayList.remove(pizza);
-            }
 
             // Call function to show the total price.  No change in quantity was made, thus pass in null.
             onPriceChange(null, false);
@@ -210,9 +229,7 @@ public class checkoutActivity extends AppCompatActivity {
         // Save them in a temporary ArrayList.
         ArrayList<PizzaData.Pizza> orderedPizzas = new ArrayList<>();
         for (PizzaData.Pizza pizza : PizzaArrayList){
-            if (pizza.getQuantity() > 0){
                 orderedPizzas.add(pizza);
-            }
         }
 
         // Turn the temporary ArrayList into json
@@ -221,10 +238,13 @@ public class checkoutActivity extends AppCompatActivity {
         // Save json string in outState.
         outState.putString("pizza_list_json", jsonPizzaArrayList);
 
+        outState.putBoolean("activityStarted", activityStarted);
+
         // call superclass to save any view hierarchy
         super.onSaveInstanceState(outState);
     }
 
+    // Creates new JSON string into intentResult, so it can be passed at anytime.
     public void constructResultIntent(){
         // Create temporary Gson object to handle json creation.
         Gson gson = new Gson();
@@ -244,6 +264,7 @@ public class checkoutActivity extends AppCompatActivity {
         // Save json string in resultIntent.
         resultIntent.putExtra("pizza_list_json", jsonPizzaArrayList);
 
+        // By default, RESULT_CANCELED. Only set RESULT_OK if order was sent.
         setResult(RESULT_CANCELED, resultIntent);
     }
 }

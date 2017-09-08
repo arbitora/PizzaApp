@@ -128,6 +128,10 @@ public class PizzaData {
             total_price = new DecimalFormat("#.00").format(temp);
         }
 
+        // Puts new int value into pizza's quantity property.
+        public void setQuantity(int new_quantity){
+            quantity = new_quantity;
+        }
 
         // Custom sorting options
         public static class Comparators
@@ -169,7 +173,6 @@ public class PizzaData {
 
     // Mock up pizza data.
     public static Pizza pizzas[] = {
-
             new Pizza ("Sinivalkoinen suomi-pitsa", new int[] {0 , 1, 2}, 6.95, false),
             new Pizza ("Torinon tulinen", new int[] {3, 4, 5, 6}, 8, false),
             new Pizza ("Talon perinteinen", new int[] {7, 1}, 5.5, false),
