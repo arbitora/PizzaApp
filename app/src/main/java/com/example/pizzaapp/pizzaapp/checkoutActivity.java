@@ -130,7 +130,9 @@ public class checkoutActivity extends AppCompatActivity {
         Set Intent result to OK if POST was successfully sent, otherwise RESULT_CANCEL
      */
     public void sendOrder(View v){
-        // TODO: Send post data
+
+        // Disable button to avoid accidentally sending multiple orders.
+        btn_PlaceOrder.setEnabled(false);
 
        // Resources res = getResources();
         ArrayList<PizzaData.Pizza> orderedPizzas = new ArrayList<>();
@@ -159,8 +161,14 @@ public class checkoutActivity extends AppCompatActivity {
                     //This code is executed if the server responds, whether or not the response contains data.
                     //The String 'response' contains the server's response.
 
+                    // Order has been placed successfully.
+                    setResult(RESULT_OK, resultIntent);
+
                     //Log.d("POST", "Response: " + response);
                     dialogMessage(res.getString(R.string.txt_error_POSTtitle), response, true);
+
+                    // Enable button for placing new order.
+                    btn_PlaceOrder.setEnabled(true);
                 }
             }, new Response.ErrorListener(){ //Create an error listener to handle errors appropriately.
                 @Override
@@ -173,6 +181,9 @@ public class checkoutActivity extends AppCompatActivity {
                         dialogMessage(res.getString(R.string.txt_error_errorTitle), res.getString(R.string.txt_error_noOrder), false);
                     else
                         dialogMessage(res.getString(R.string.txt_error_errorTitle), res.getString(R.string.txt_error_connError), false);
+
+                    // Enable button for placing new order.
+                    btn_PlaceOrder.setEnabled(true);
                 }
             }) {
                 protected Map<String, String> getParams() {
@@ -202,11 +213,19 @@ public class checkoutActivity extends AppCompatActivity {
         } // End of network available
         else if (nothingOrdered){
             dialogMessage(res.getString(R.string.txt_error_errorTitle), res.getString(R.string.txt_error_noOrder), false);
+
+            // Enable button for placing new order.
+            btn_PlaceOrder.setEnabled(true);
         }
         else{
             setResult(RESULT_CANCELED, resultIntent);
             dialogMessage(res.getString(R.string.txt_error_errorTitle), res.getString(R.string.txt_error_connError), false);
+
+            // Enable button for placing new order.
+            btn_PlaceOrder.setEnabled(true);
         }
+
+        // Enable button for placing new order.
 
     }
 
