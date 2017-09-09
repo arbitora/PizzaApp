@@ -50,7 +50,10 @@ public class MainActivity extends AppCompatActivity {
         mPizzaAdapter.setPizzaQuantityListener(new PizzaAdapter.PizzaQuantityListener(){
             @Override
             public void onPizzaQuantityChange(PizzaData.Pizza changedPizza, boolean isIncreased){
-                pizzaQuantityChangeToast(changedPizza, isIncreased);
+
+
+                // Simple toast message, disabled for final build.
+                //pizzaQuantityChangeToast(changedPizza, isIncreased);
                 // Text message to see the changes.
                 Log.d("STRING", "Message: " + PizzaData.pizzas);
             }
