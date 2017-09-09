@@ -19,4 +19,9 @@
     <string name="txt_option_paynow">Maksa nyt</string>
     <string name="txt_option_selecteat">Valitse toinen:</string>
     <string name="txt_option_takeaway">Ota mukaan</string>
+
+    <string name="txt_error_POSTtitle">POST Vastaus</string>
+    <string name="txt_error_errorTitle">VIRHE</string>
+    <string name="txt_error_connError">Virhe tilausta tehdessä. Tarkista internet yhteytesi ja yritä uudelleen.</string>
+    <string name="txt_error_noOrder">Ei mitään tilattavaa. Lisää pizzoja tilaukseesi ennen tilauksen tekemistä.</string>
 </resources>

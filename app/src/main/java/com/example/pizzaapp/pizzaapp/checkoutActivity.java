@@ -1,10 +1,13 @@
 package com.example.pizzaapp.pizzaapp;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +16,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.pizzaapp.pizzaapp.PizzaAdapter.PizzaQuantityListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -20,6 +29,8 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class checkoutActivity extends AppCompatActivity {
 
@@ -28,6 +39,8 @@ public class checkoutActivity extends AppCompatActivity {
     private boolean activityStarted = false; // False by default, true when started via Intent.
 
     private boolean data_sent = false; // TODO: set true when POST sent successfully.
+    Resources res;
+    private boolean nothingOrdered = true;
 
     private ListView pizzaListView;
     private Button btn_PlaceOrder;
@@ -39,6 +52,8 @@ public class checkoutActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.checkout_activity);
+
+        res = getResources();
 
         // Initialize PizzaArrayList
         PizzaArrayList = new ArrayList<>();
@@ -110,12 +125,111 @@ public class checkoutActivity extends AppCompatActivity {
         constructResultIntent();
     }
 
+    /*
+        Sends a JSON list of the ordered pizzas to internet. via POST.
+        Set Intent result to OK if POST was successfully sent, otherwise RESULT_CANCEL
+     */
     public void sendOrder(View v){
-        // TODO: Send post data.
+        // TODO: Send post data
 
-        // Set Intent result to OK if POST was successfully sent, otherwise RESULT_CANCEL
-        setResult(RESULT_CANCELED, resultIntent);
-        setResult(RESULT_OK, resultIntent);
+       // Resources res = getResources();
+        ArrayList<PizzaData.Pizza> orderedPizzas = new ArrayList<>();
+        for (PizzaData.Pizza pizza : PizzaArrayList) {
+            if (pizza.getQuantity() > 0) {
+                orderedPizzas.add(pizza);
+            }
+        }
+
+        // Nothing to order.
+        if (orderedPizzas.size() < 1){
+            nothingOrdered = true;
+        }
+        else{
+            nothingOrdered = false;
+        }
+
+        if (isNetworkAvailable(this) && !nothingOrdered){
+
+            RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
+
+            String url = "https://httpbin.org/post";
+            StringRequest MyStringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
+                @Override
+                public void onResponse(String response){
+                    //This code is executed if the server responds, whether or not the response contains data.
+                    //The String 'response' contains the server's response.
+
+                    //Log.d("POST", "Response: " + response);
+                    dialogMessage(res.getString(R.string.txt_error_POSTtitle), response, true);
+                }
+            }, new Response.ErrorListener(){ //Create an error listener to handle errors appropriately.
+                @Override
+                public void onErrorResponse(VolleyError error){
+                    // Code to be executed if there is an error.
+                    //Log.d("POST", "Error: " + error);
+                    setResult(RESULT_CANCELED, resultIntent);
+
+                    if (nothingOrdered)
+                        dialogMessage(res.getString(R.string.txt_error_errorTitle), res.getString(R.string.txt_error_noOrder), false);
+                    else
+                        dialogMessage(res.getString(R.string.txt_error_errorTitle), res.getString(R.string.txt_error_connError), false);
+                }
+            }) {
+                protected Map<String, String> getParams() {
+                    Map<String, String> MyData = new HashMap<String, String>();
+
+                    // Create temporary Gson object to handle json creation.
+                    Gson gson = new Gson();
+
+                    ArrayList<PizzaData.Pizza> orderedPizzas = new ArrayList<>();
+                    for (PizzaData.Pizza pizza : PizzaArrayList) {
+                        if (pizza.getQuantity() > 0) {
+                            orderedPizzas.add(pizza);
+                        }
+                    }
+
+                        // Turn the temporary ArrayList into json
+                        String jsonPizzaArrayList = gson.toJson(orderedPizzas);
+
+                        MyData.put(jsonPizzaArrayList, "OrderList");
+
+                        //Log.d("POST", "MyData: " + MyData);
+                        return MyData;
+                }
+            };
+
+            MyRequestQueue.add(MyStringRequest);
+        } // End of network available
+        else if (nothingOrdered){
+            dialogMessage(res.getString(R.string.txt_error_errorTitle), res.getString(R.string.txt_error_noOrder), false);
+        }
+        else{
+            setResult(RESULT_CANCELED, resultIntent);
+            dialogMessage(res.getString(R.string.txt_error_errorTitle), res.getString(R.string.txt_error_connError), false);
+        }
+
+    }
+
+    /*
+        Displays a dialog with the message and OK button which closes the dialog.
+        If endActivity is true, end's this activity.
+     */
+    private void dialogMessage(String title, String message, final boolean endActivity){
+        //Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+
+        AlertDialog alertDialog = new AlertDialog.Builder(checkoutActivity.this).create();
+        alertDialog.setTitle(title);
+        alertDialog.setMessage(message);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int x){
+                        dialog.dismiss();
+                        if (endActivity)
+                            finish();
+                    }
+                });
+
+        alertDialog.show();
     }
 
 

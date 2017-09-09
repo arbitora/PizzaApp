@@ -19,4 +19,9 @@
     <string name="txt_option_paynow">Pay now</string>
     <string name="txt_option_selecteat">Select either:</string>
     <string name="txt_option_takeaway">Take away</string>
+
+    <string name="txt_error_POSTtitle">POST Response</string>
+    <string name="txt_error_errorTitle">ERROR</string>
+    <string name="txt_error_connError">Error trying to send the order. Please check your connection and retry.</string>
+    <string name="txt_error_noOrder">There is nothing to order. Please add pizza(s) to your order.</string>
 </resources>

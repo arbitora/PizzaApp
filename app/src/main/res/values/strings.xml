@@ -23,4 +23,9 @@
 
     <string name="txt_checkout_checkout">Checkout</string>
     <string name="txt_checkout_total">Total</string>
+
+    <string name="txt_error_POSTtitle">POST Response</string>
+    <string name="txt_error_errorTitle">ERROR</string>
+    <string name="txt_error_connError">Error trying to send the order. Please check your connection and retry.</string>
+    <string name="txt_error_noOrder">There is nothing to order. Please add pizza(s) to your order.</string>
 </resources>

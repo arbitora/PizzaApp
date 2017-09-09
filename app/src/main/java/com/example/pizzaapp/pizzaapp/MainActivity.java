@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /*
-        Initializes the PizzaArrayList with the mockup pizza data.
+        Initializes the PizzaArrayList with the mock up pizza data.
         If doSort is true, the list will be sorted by the default comparator method.
      */
     private void fillPizzaArrayList(boolean doSort){

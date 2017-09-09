@@ -28,7 +28,7 @@
             android:layout_weight="1"
             android:padding="5sp"
             android:text="@string/txt_checkout_total"
-            android:textSize="20sp"
+            android:textSize="18sp"
             tools:textColor="@color/colorTitles" />
 
         <Button
@@ -37,6 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/btn_selector"
+            android:onClick="sendOrder"
             android:padding="5sp"
             android:text="@string/txt_command_placeorder"
             tools:textColor="@color/colorTitles" />
