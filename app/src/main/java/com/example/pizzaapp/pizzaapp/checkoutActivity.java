@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -39,14 +38,14 @@ public class checkoutActivity extends AppCompatActivity {
     private boolean activityStarted = false; // False by default, true when started via Intent.
 
     private boolean data_sent = false; // TODO: set true when POST sent successfully.
-    Resources res;
-    private boolean nothingOrdered = true;
+    Resources res; // To load string resources for messages.
+    private boolean nothingOrdered = true; // Avoid doing unnecessary internet connections.
 
-    private ListView pizzaListView;
-    private Button btn_PlaceOrder;
-    private TextView txt_total_price;
+    private ListView pizzaListView; // Stores the pizzas.
+    private Button btn_PlaceOrder; // CheckOut button for enabling and disabling it.
+    private TextView txt_total_price; // Shows total price.
 
-    private Intent resultIntent;
+    private Intent resultIntent; // Intent data is stored here for activity result.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -281,6 +280,7 @@ public class checkoutActivity extends AppCompatActivity {
         }else{
             isConnected= false;
         }
+
         return isConnected;
     }
 
@@ -299,10 +299,12 @@ public class checkoutActivity extends AppCompatActivity {
             }
         }
 
+        // Set new total price text.
         if (txt_total_price != null)
             txt_total_price.setText(getResources().getString(R.string.txt_checkout_total) + " " + new DecimalFormat("0.00").format(total_price) + " €");
 
         // Create toast message if changedPizza is not null (a change in pizza was detected).
+        /*
         if (changedPizza != null){
             String temp;
             if (isIncreased){
@@ -314,6 +316,7 @@ public class checkoutActivity extends AppCompatActivity {
 
             Toast.makeText(this, temp, Toast.LENGTH_SHORT).show();
         }
+        */
 
         if (mPizzaAdapter != null)
             mPizzaAdapter.notifyDataSetChanged();

@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private static PizzaAdapter mPizzaAdapter;
 
     private ListView pizzaListView;
-    private EditText etxt_SearchField;
+    private EditText etxt_SearchField; // Search field.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
